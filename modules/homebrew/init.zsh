@@ -14,10 +14,11 @@ fi
 # Variables
 #
 
-# Load standard Homebrew shellenv into the shell session.
-# `brew shellenv` is relatively new, guard for legacy Homebrew.
+# Load standard Homebrew shellenv into the shell session. 
+# Load 'HOMEBREW_' prefixed variables only. Avoid loading 'PATH' related
+# variables as they are already handled in standard zsh configuration.
 if (( $+commands[brew] )); then
-  eval "$(brew shellenv 2> /dev/null)"
+  eval "${(@M)${(f)"$(brew shellenv 2> /dev/null)"}:#export HOMEBREW*}"
 fi
 
 #
@@ -45,12 +46,11 @@ alias casks='hb_deprecated brew cask search'
 alias caskx='brew cask uninstall'
 
 function hb_deprecated {
-  local cmd="${argv[3]}"
-  local cmd_args=( ${(@)argv:4} )
+  local cmd="${@[3]}"
+  local cmd_args="${@:4}"
 
   printf "'brew cask %s' has been deprecated, " "${cmd}"
   printf "using 'brew %s' instead\n" "${cmd}"
 
-  cmd_args=( ${(@)argv:4} )
-  command brew "${cmd}" ${(@)cmd_args}
+  command brew "${cmd}" "${=cmd_args}"
 }
