@@ -94,10 +94,57 @@ fi
 if [ -f "$HOME/.config/xmodmap/printsc" ]; then
     xmodmap ~/.config/xmodmap/printsc
 fi
+# }}}
+# Alias {{{ 
+# export paths
+export W=~/.media/cambridge/lent
+export C=~/.media/cambridge
+export P=~/Projects/thesis
+export Thesis=~/Projects/thesis/Andrius/information-networks
+export PP=~/.media/project
+export D=~/Downloads
 
-# (aagg) Mon  5 Nov 17:03:40 GMT 2018
-if [ -f "$HOME/.config/zsh/alias.zsh" ]; then
-    source ~/.config/zsh/alias.zsh
-fi
+# 
+export LATEX_COMPILE=~/Projects/thesis/Andrius/dissertation/main/dissertation.tex
+
+# ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias sl='ls -CF'
+
+alias cl='clear; ls'
+
+# cd
+alias cd..='cd ..; ls'
+alias cdd='cd ..; ls'
+
+# shortcuts
+alias cdw='cd $W; ls'
+alias cdc='cd $W; ls'
+alias cdp='cd $P; ls'
+alias cdt='cd $Thesis; ls'
+alias cdp2='cd $PP; ls'
+alias cdpp='cd $PP; ls'
+#dissertation
+alias dis='cd $P/Andrius/dissertation; ls'
+alias cddis='cd $P/Andrius/dissertation; ls'
+alias cdis='cd $P/Andrius/dissertation; ls'
+alias cids='cd $P/Andrius/dissertation; ls'
+alias cdiss='cd $P/Andrius/dissertation; ls'
+alias cddsi='cd $P/Andrius/dissertation; ls'
+
+#information theory
+alias inf='cd $C/mich/info; ls'
+alias ifn='cd $C/mich/info; ls'
+alias ifno='cd $C/mich/info; ls'
+alias info='cd $C/mich/info; ls'
+alias cdinf='cd $C/mich/info; ls'
+alias cdifn='cd $C/mich/info; ls'
+alias cdinfo='cd $C/mich/info; ls'
+alias cdifno='cd $C/mich/info; ls'
+
+alias python='python3.6'
+alias wine='/opt/wine-stable/bin/wine'
 # }}}
 # vim: set foldmethod=marker: set foldlevel=0
