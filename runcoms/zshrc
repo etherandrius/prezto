@@ -51,6 +51,9 @@ export KEYTIMEOUT=1
 
 # (kc506) Wed 23 Jan 13:42:56 GMT 2019
 open() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
+opne() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
+onep() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
+oenp() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
 
 # (aagg) Sun 27 Jan 13:37:24 GMT 2019
 gitto() {git add *; git commit -m "$@"; git push}
@@ -97,15 +100,12 @@ fi
 # }}}
 # Alias {{{ 
 # export paths
-export W=~/.media/cambridge/lent
+export W=~/.media/cambridge
 export C=~/.media/cambridge
-export P=~/Projects/thesis
+export P=~/Projects
 export Thesis=~/Projects/thesis/Andrius/information-networks
 export PP=~/.media/project
 export D=~/Downloads
-
-# Just a hook for simple compilation
-export LATEX_COMPILE=~/Projects/thesis/Andrius/dissertation/main/dissertation.tex
 
 # ls aliases
 alias ll='ls -alF'
@@ -145,6 +145,9 @@ alias cdinfo='cd $C/mich/info; ls'
 alias cdifno='cd $C/mich/info; ls'
 
 alias python='python3.6'
+alias vim='vim.gtk'
 alias wine='/opt/wine-stable/bin/wine'
+alias vimr='vim -R' # vim readonly mode if I don't want to accidently edit
+
 # }}}
 # vim: set foldmethod=marker: set foldlevel=0
