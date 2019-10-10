@@ -10,4 +10,144 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+# Random {{{
+
+# ignore case when matching
+
+
+setopt histignorealldups sharehistory
+
+# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
+HISTSIZE=1000
+SAVEHIST=1000
+HISTFILE=~/.zsh_history
+
+# Use modern completion system
+autoload -Uz compinit
+compinit
+
+# Requred for -M menuselect
+zmodload zsh/complist
+
 # Customize to your needs...
+# (aagg) Mon  5 Nov 17:25:28 GMT 2018
+bindkey -v
+# slight tweaks
+bindkey '^P' up-history
+bindkey '^N' down-history
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+bindkey '^r' history-incremental-search-backward
+bindkey -M vicmd '^A' end-of-line
+bindkey -M viins '^A' end-of-line
+# for some ungodly reason ^M is Return (and ^I is tab)
+bindkey -M menuselect '^M' .accept-line
+
+export KEYTIMEOUT=1
+
+# (aagg) Sun 14 Oct 13:09:30 BST 2018
+# call xdg-open and ignore any stdin and sterr outputs.
+# open() { (xdg-open "$@" &>/dev/null &) }
+
+# (kc506) Wed 23 Jan 13:42:56 GMT 2019
+open() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
+opne() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
+onep() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
+oenp() { ((for x in "$@" ; do xdg-open "$x" &>/dev/null ; done) &> /dev/null &) }
+
+# (aagg) Sun 27 Jan 13:37:24 GMT 2019
+gitto() {git add *; git commit -m "$@"; git push}
+
+# (aagg) Sun 11 Nov 19:48:56 GMT 2018
+# cd and ls into one function.
+cdls() { cd "$@" && ls; }
+
+# disables relic off the past <C-s> <C-q>
+stty -ixon
+
+# (aagg) Wed 17 Oct 22:56:50 BST 2018
+# xinput --set-prop 16 "libinput Accel Speed" 0.5
+trackpoint_id=$(xinput --list | grep "Elantech TrackPoint" | sed 's/.*id=\([[:digit:]]\+\).*/\1/')
+if [[ -z "$trackpoint_id" ]] ; then
+    echo "You done fucked up"
+else
+    xinput --set-prop $trackpoint_id "libinput Accel Speed" 0.5
+fi
+# }}}
+# Source`s {{{
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=always'
+    alias fgrep='fgrep --color=always'
+    alias egrep='egrep --color=always'
+fi
+
+# (aagg) Fri 15 Jun 13:32:31 BST 2018
+# capslock button acts as control.
+if [ -f "$HOME/.config/xmodmap/capslock" ]; then
+    xmodmap ~/.config/xmodmap/capslock
+fi
+
+# (aagg) Mon  2 Jul 00:52:55 EEST 2018
+# prints screen button acts as right click.
+if [ -f "$HOME/.config/xmodmap/printsc" ]; then
+    xmodmap ~/.config/xmodmap/printsc
+fi
+# }}}
+# Alias {{{ 
+# export paths
+export W=~/.media/cambridge
+export C=~/.media/cambridge
+export P=~/Projects
+export Thesis=~/Projects/thesis/Andrius/information-networks
+export PP=~/.media/project
+export D=~/Downloads
+
+# ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias sl='ls -CF'
+
+alias cl='clear; ls'
+
+# cd
+alias cd..='cd ..; ls'
+alias cdd='cd ..; ls'
+
+# shortcuts
+alias cdw='cd $W; ls'
+alias cdc='cd $W; ls'
+alias cdp='cd $P; ls'
+alias cdt='cd $Thesis; ls'
+alias cdp2='cd $PP; ls'
+alias cdpp='cd $PP; ls'
+#dissertation
+alias dis='cd $P/Andrius/dissertation; ls'
+alias cddis='cd $P/Andrius/dissertation; ls'
+alias cdis='cd $P/Andrius/dissertation; ls'
+alias cids='cd $P/Andrius/dissertation; ls'
+alias cdiss='cd $P/Andrius/dissertation; ls'
+alias cddsi='cd $P/Andrius/dissertation; ls'
+
+#information theory
+alias inf='cd $C/mich/info; ls'
+alias ifn='cd $C/mich/info; ls'
+alias ifno='cd $C/mich/info; ls'
+alias info='cd $C/mich/info; ls'
+alias cdinf='cd $C/mich/info; ls'
+alias cdifn='cd $C/mich/info; ls'
+alias cdinfo='cd $C/mich/info; ls'
+alias cdifno='cd $C/mich/info; ls'
+
+alias python='python3.6'
+alias vim='vim.gtk'
+alias wine='/opt/wine-stable/bin/wine'
+alias vimr='vim -R' # vim readonly mode if I don't want to accidently edit
+
+# }}}
+# vim: set foldmethod=marker: set foldlevel=0
