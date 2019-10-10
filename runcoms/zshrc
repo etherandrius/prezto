@@ -11,3 +11,102 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+
+# Random {{{
+
+#HISTORY
+setopt histignorealldups
+# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
+HISTSIZE=1000
+SAVEHIST=1000
+HISTFILE=~/.zsh_history
+
+# disables relic off the past <C-s> <C-q>
+stty -ixon
+
+bindkey '^R' history-incremental-pattern-search-backward
+bindkey '^S' history-incremental-pattern-search-forward
+bindkey "^P" vi-up-line-or-history
+bindkey "^N" vi-down-line-or-history
+
+# Use modern completion system
+autoload -Uz compinit
+#compinit # maybe uncomment TODO
+
+# (aagg) Mon  5 Nov 17:25:28 GMT 2018
+bindkey -v
+# slight tweaks
+bindkey '^P' up-history
+bindkey '^N' down-history
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+bindkey '^r' history-incremental-search-backward
+# makes so completion selection doesn't appenda space
+bindkey "^O" accept-line 
+
+
+export KEYTIMEOUT=1
+export EDITOR=vim
+
+
+# }}}
+# Source`s {{{
+# (aagg) Tue Oct  1 21:10:11 BST 2019
+# ranger with cd functionality
+function rangercd {
+    tempfile="$(mktemp -t tmp.XXXXXX)"
+    /usr/local/opt/ranger/bin/ranger --choosedir="$tempfile" "${@:-$(pwd)}"
+    test -f "$tempfile" &&
+    if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
+        cd -- "$(cat "$tempfile")"
+    fi  
+    rm -f -- "$tempfile"
+}
+
+bindkey -s '^O' 'rangercd\n'
+# }}}
+# Alias {{{ 
+
+# fixed node
+export PATH="/usr/local/opt/node@10/bin:$PATH"
+
+#add GOPATH
+export GOPATH="$HOME/Projects/go"
+# add go to PATH
+export PATH="$PATH:$GOPATH/bin"
+# add ruby to PATH
+#export PATH="/usr/local/opt/ruby/bin:$PATH"
+#eval "$(rbenv init -)"
+# add terraform to PATH
+export PATH="/usr/local/opt/terraform@0.11/bin:$PATH"
+
+# export paths
+export P=~/Projects
+export R=~/Projects/go/src/github.palantir.build/rubix
+export D=~/Downloads
+
+# ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias sl='ls -CF'
+
+alias cl='clear; ls'
+
+# lf alias
+alias fl='rangercd'
+alias lf='rangercd'
+
+# cd
+alias cd..='cd ..; ls'
+alias cdd='cd ..; ls'
+
+# shortcuts
+alias cdp='cd $P; ls'
+alias cdr='cd $R; ls'
+alias cdg='cd $GOPATH/src; ls'
+
+alias grp="grep --color=always -i"
+alias vimr='vim -R' # vim readonly mode if I don't want to accidently edit
+# }}}
+# vim: set foldmethod=marker: set foldlevel=1
