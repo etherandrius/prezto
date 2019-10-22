@@ -16,9 +16,9 @@ fi
 
 #HISTORY
 setopt histignorealldups
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=1000
-SAVEHIST=1000
+# Keep 20,000 lines of history within the shell and save it to ~/.zsh_history:
+HISTSIZE=20000
+SAVEHIST=20000
 HISTFILE=~/.zsh_history
 
 # disables relic off the past <C-s> <C-q>
@@ -28,6 +28,12 @@ bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^S' history-incremental-pattern-search-forward
 bindkey "^P" vi-up-line-or-history
 bindkey "^N" vi-down-line-or-history
+
+# needed to defin menuselect
+zstyle ':completion:*' menu select
+zmodload zsh/complist
+# better autocomplete behaviour
+bindkey -M menuselect '^M' .accept-line
 
 # Use modern completion system
 autoload -Uz compinit
@@ -67,6 +73,10 @@ bindkey -s '^O' 'rangercd\n'
 # }}}
 # Alias {{{ 
 
+
+# Secret
+source ~/.config/secret/export_secrets.zsh
+
 # fixed node
 export PATH="/usr/local/opt/node@10/bin:$PATH"
 
@@ -75,7 +85,7 @@ export GOPATH="$HOME/Projects/go"
 # add go to PATH
 export PATH="$PATH:$GOPATH/bin"
 # add ruby to PATH
-#export PATH="/usr/local/opt/ruby/bin:$PATH"
+export PATH="/usr/local/opt/ruby/bin:$PATH"
 #eval "$(rbenv init -)"
 # add terraform to PATH
 export PATH="/usr/local/opt/terraform@0.11/bin:$PATH"
