@@ -95,6 +95,15 @@ export P=~/Projects
 export R=~/Projects/go/src/github.palantir.build/rubix
 export D=~/Downloads
 
+# ./godelw alias
+alias gow='./godelw'
+
+# git
+alias gits='git s'
+alias gita='git a'
+alias gitd='git d'
+alias gitc='git c'
+
 # ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
