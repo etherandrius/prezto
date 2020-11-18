@@ -57,25 +57,20 @@ export EDITOR=vim
 
 # }}}
 # Source`s {{{
-# (aagg) Tue Oct  1 21:10:11 BST 2019
-# ranger with cd functionality
-function rangercd {
-    tempfile="$(mktemp -t tmp.XXXXXX)"
-    /usr/local/opt/ranger/bin/ranger --choosedir="$tempfile" "${@:-$(pwd)}"
-    test -f "$tempfile" &&
-    if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
-        cd -- "$(cat "$tempfile")"
-    fi  
-    rm -f -- "$tempfile"
-}
 
-bindkey -s '^O' 'rangercd\n'
-# }}}
-# Alias {{{ 
+# fzf keybindings
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+source ~/.config/secret/alias.zsh
 
 # Secret
 source ~/.config/secret/export_secrets.zsh
+
+# }}}
+# Alias {{{ 
+
+alias mvim="/usr/local/Cellar/macvim/8.2-166_1/bin/mvim"
+alias macvim="/usr/local/Cellar/macvim/8.2-166_1/bin/mvim"
 
 # fixed node
 export PATH="/usr/local/opt/node@10/bin:$PATH"
@@ -86,14 +81,18 @@ export GOPATH="$HOME/Projects/go"
 export PATH="$PATH:$GOPATH/bin"
 # add ruby to PATH
 export PATH="/usr/local/opt/ruby/bin:$PATH"
+export PATH="/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
+export PATH="/usr/local/opt/go@1.14/bin:$PATH"
+export PATH="$PATH:/usr/local/opt"
 #eval "$(rbenv init -)"
-# add terraform to PATH
-export PATH="/usr/local/opt/terraform@0.11/bin:$PATH"
 
 # export paths
 export P=~/Projects
 export R=~/Projects/go/src/github.palantir.build/rubix
-export D=~/Downloads
+export D=~/Projects/go/src/github.palantir.build/deployability
+
+# bat
+alias bat='bat --theme=GitHub'
 
 # ./godelw alias
 alias gow='./godelw'
@@ -103,6 +102,7 @@ alias gits='git s'
 alias gita='git a'
 alias gitd='git d'
 alias gitc='git c'
+alias gitp='git p'
 
 # ls aliases
 alias ll='ls -alF'
@@ -112,20 +112,81 @@ alias sl='ls -CF'
 
 alias cl='clear; ls'
 
-# lf alias
-alias fl='rangercd'
-alias lf='rangercd'
-
 # cd
 alias cd..='cd ..; ls'
 alias cdd='cd ..; ls'
 
 # shortcuts
+alias cdroot='cd $(git rev-parse --show-toplevel)'
 alias cdp='cd $P; ls'
 alias cdr='cd $R; ls'
 alias cdg='cd $GOPATH/src; ls'
+alias cd-='popd'
 
 alias grp="grep --color=always -i"
-alias vimr='vim -R' # vim readonly mode if I don't want to accidently edit
+
+# goes to online repo for 
+alias reporemote="gwc remote"
+alias remoterepo="gwc remote"
+
 # }}}
+# {{{ My Funcs
+
+qload() {
+    uqc load $1 | tee /dev/tty | pbcopy
+}
+qsave() {
+    uqc save $1
+}
+
+cistatus() {
+    hub ci-status -v
+    sleep 20
+    hub ci-status ${SHA}
+    RET=$?
+    # Exit code of 2 means pending
+    while [ ${RET} -eq 2 ]; do
+      sleep 20
+      hub ci-status ${SHA}
+      RET=$?
+    done
+    hub ci-status -v
+}
+
+alert() {
+    osascript -e 'display notification "alert"'
+}
+
+
+# }}}
+# {{{ Completion
+
+autoload -U +X bashcompinit && bashcompinit
+
+source /usr/local/etc/bash_completion.d/az
+
+# }}}
+# {{{ Palantir
+#
+
+alias render="zsh \$(git rev-parse --show-toplevel)/rubixw render | slslog"
+alias project-version="zsh \$(git rev-parse --show-toplevel)/godelw project-version | tee /dev/tty | pbcopy"
+alias format="zsh \$(git rev-parse --show-toplevel)/godelw format"
+
+# }}}
+# {{{ Test
+
+# Called every time before the prompt is drawn
+precmd() { 
+    # Tab name == current folder name
+    echo -ne "\e]1;${PWD##*/}\a"
+}
+
+commit_env() {
+    COMMIT="$(git log -1 --pretty=%B). $(basename `git rev-parse --show-toplevel`), $(gow project-version)"; echo $COMMIT
+}
+
+
+# }}}
+#
 # vim: set foldmethod=marker: set foldlevel=1
