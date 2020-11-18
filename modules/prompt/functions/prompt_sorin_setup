@@ -141,7 +141,7 @@ function prompt_sorin_setup {
   zstyle ':prezto:module:git:info:renamed' format ' %%B%F{5}➜%f%%b'
   zstyle ':prezto:module:git:info:stashed' format ' %%B%F{6}✭%f%%b'
   zstyle ':prezto:module:git:info:unmerged' format ' %%B%F{3}═%f%%b'
-  zstyle ':prezto:module:git:info:untracked' format ' %%B%F{7}◼%f%%b'
+  zstyle ':prezto:module:git:info:untracked' format ' %%B%F{4}◼%f%%b'
   zstyle ':prezto:module:git:info:keys' format \
     'status' '%b %p %c:%s%A%B%S%a%d%m%r%U%u'
 
@@ -166,6 +166,7 @@ function prompt_sorin_setup {
   RPROMPT='$python_info[virtualenv]${editor_info[overwrite]}%(?:: %F{11}'
   RPROMPT+=${show_return}
   RPROMPT+='%f)${VIM:+" %B%F{6}V%f%b"}${_prompt_sorin_git}'
+  RPROMPT+=" [%D{%k:%M}]"
   SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 }
 
