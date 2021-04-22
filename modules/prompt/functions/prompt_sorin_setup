@@ -106,6 +106,22 @@ function prompt_sorin_precmd {
   prompt_sorin_async_tasks
 }
 
+function kubectl_context {
+    # local context="$(kubectl config current-context | sed -E "s/(([a-zA-Z]+-){3}[a-zA-Z]+).*/\1/")"
+    local context="$(kubectl config current-context)"
+    case $context in 
+        *"agrabauskas"*)
+            _agrabauskas_kubectl_context="%F{4}$context%F"
+            ;;
+        *"production"*)
+            _agrabauskas_kubectl_context="%F{1}$context%F"
+            ;;
+        *"staging"*)
+            _agrabauskas_kubectl_context="%F{2}$context%F"
+            ;;
+    esac
+}
+
 function prompt_sorin_setup {
   setopt LOCAL_OPTIONS
   unsetopt XTRACE KSH_ARRAYS
@@ -117,6 +133,8 @@ function prompt_sorin_setup {
 
   # Add hook for calling git-info before each command.
   add-zsh-hook precmd prompt_sorin_precmd
+
+  add-zsh-hook precmd kubectl_context
 
   # Tell prezto we can manage this prompt
   zstyle ':prezto:module:prompt' managed 'yes'
@@ -159,14 +177,16 @@ function prompt_sorin_setup {
   _sorin_cur_git_root=''
 
   _prompt_sorin_git=''
+  _agrabauskas_kubectl_context=''
   _prompt_sorin_pwd=''
 
   # Define prompts.
   PROMPT='${SSH_TTY:+"%F{9}%n%f%F{7}@%f%F{13}%m%f "}%B%F{3}${_prompt_sorin_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} '
   RPROMPT='$python_info[virtualenv]${editor_info[overwrite]}%(?:: %F{11}'
   RPROMPT+=${show_return}
-  RPROMPT+='%f)${VIM:+" %B%F{6}V%f%b"}${_prompt_sorin_git}'
-  RPROMPT+=" [%D{%k:%M}]"
+  RPROMPT+='%f)${_agrabauskas_kubectl_context} '
+  RPROMPT+='${VIM:+" %B%F{6}V%f%b"}${_prompt_sorin_git} '
+  RPROMPT+="[%D{%k:%M}]"
   SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 }
 

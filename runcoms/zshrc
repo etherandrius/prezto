@@ -12,6 +12,9 @@ fi
 
 # Customize to your needs...
 
+plugins=(kubectl)
+
+
 # Random {{{
 
 #HISTORY
@@ -69,8 +72,9 @@ source ~/.config/secret/export_secrets.zsh
 # }}}
 # Alias {{{ 
 
-alias mvim="/usr/local/Cellar/macvim/8.2-166_1/bin/mvim"
-alias macvim="/usr/local/Cellar/macvim/8.2-166_1/bin/mvim"
+alias mvim="/usr/local/Cellar/macvim/8.2-169_2/bin/mvim"
+alias macvim="/usr/local/Cellar/macvim/8.2-169_2/bin/mvim"
+alias vim="/usr/local/bin/vim"
 
 # fixed node
 export PATH="/usr/local/opt/node@10/bin:$PATH"
@@ -84,6 +88,7 @@ export PATH="/usr/local/opt/ruby/bin:$PATH"
 export PATH="/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
 export PATH="/usr/local/opt/go@1.14/bin:$PATH"
 export PATH="$PATH:/usr/local/opt"
+export PATH="/usr/local/Cellar:$PATH"
 #eval "$(rbenv init -)"
 
 # export paths
@@ -126,7 +131,6 @@ alias cd-='popd'
 alias grp="grep --color=always -i"
 
 # goes to online repo for 
-alias reporemote="gwc remote"
 alias remoterepo="gwc remote"
 
 # }}}
@@ -141,7 +145,6 @@ qsave() {
 
 cistatus() {
     hub ci-status -v
-    sleep 20
     hub ci-status ${SHA}
     RET=$?
     # Exit code of 2 means pending
@@ -153,10 +156,38 @@ cistatus() {
     hub ci-status -v
 }
 
+bastion_ready() {
+    while ! host $1 
+    do 
+        sleep 10
+    done
+    host $1 
+}
+
+
 alert() {
     osascript -e 'display notification "alert"'
 }
 
+
+
+
+# }}}
+# {{{ kubectl
+
+kubenodes() {
+        /usr/local/bin/kubectl get nodes --selector com.palantir.rubix/infrastructure-node= \
+        --label-columns kubernetes.io/hostname,nodetype,failure-domain.beta.kubernetes.io/zone,com.palantir.rubix/instance-id |
+        # Emit columns in order HOSTNAME, NODETYPE, ZONE, INSTANCE-ID, NAME, AGE, STATUS
+        awk '{print $6, $7, $8, $9, $1, $4, $2}' | column -t | (
+        read -r
+        # Print header line and sort the rest
+        printf "%s\n" "$REPLY"
+        sort -bk 2
+     )
+}
+
+alias k="kubectl"
 
 # }}}
 # {{{ Completion
@@ -173,18 +204,32 @@ alias render="zsh \$(git rev-parse --show-toplevel)/rubixw render | slslog"
 alias project-version="zsh \$(git rev-parse --show-toplevel)/godelw project-version | tee /dev/tty | pbcopy"
 alias format="zsh \$(git rev-parse --show-toplevel)/godelw format"
 
+
+commit_env() {
+    COMMIT="$(git log -1 --pretty=%B). $(basename `git rev-parse --show-toplevel`), $(gow project-version)"; echo $COMMIT
+}
+
+retrying_render() {
+    ./rubixw render || (sleep 20; retrying_render)
+}
+
 # }}}
 # {{{ Test
 
 # Called every time before the prompt is drawn
 precmd() { 
-    # Tab name == current folder name
-    echo -ne "\e]1;${PWD##*/}\a"
+    if [[ -v tabname ]]; then 
+        echo -ne "\e]1;${tabname}\a"
+    else 
+        # Tab name == current folder name
+        echo -ne "\e]1;${PWD##*/}\a"
+    fi
 }
 
-commit_env() {
-    COMMIT="$(git log -1 --pretty=%B). $(basename `git rev-parse --show-toplevel`), $(gow project-version)"; echo $COMMIT
-}
+
+autoload colors; colors
+for color (${(k)fg})
+  eval "$color() {print -n \$fg[$color]; cat; print -n \$reset_color}"
 
 
 # }}}
