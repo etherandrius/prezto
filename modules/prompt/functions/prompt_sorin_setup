@@ -109,6 +109,7 @@ function prompt_sorin_precmd {
 function kubectl_context {
     # local context="$(kubectl config current-context | sed -E "s/(([a-zA-Z]+-){3}[a-zA-Z]+).*/\1/")"
     local context="$(kubectl config current-context)"
+    context="${context:0:${#context}/2}"
     case $context in 
         *"agrabauskas"*)
             _agrabauskas_kubectl_context="%F{4}$context%F"
