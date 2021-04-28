@@ -175,8 +175,27 @@ alert() {
 # }}}
 # {{{ kubectl
 
+
+kubectl() {
+    local context="$(/usr/local/bin/kubectl config current-context)"
+    context="${context:0:${#context}/2}"
+
+    local color='\033[0;31m' 
+    case $context in 
+        *"staging"*)
+            color='\033[0;32m'
+            ;;
+        *"agrabauskas"*)
+            color='\033[0;34m'
+            ;;
+    esac
+    echo -e "${color}$context\033[0m"
+    /usr/local/bin/kubectl $@
+}
+alias k=kubectl
+
 kubenodes() {
-        /usr/local/bin/kubectl get nodes --selector com.palantir.rubix/infrastructure-node= \
+        kubectl get nodes --selector com.palantir.rubix/infrastructure-node= \
         --label-columns kubernetes.io/hostname,nodetype,failure-domain.beta.kubernetes.io/zone,com.palantir.rubix/instance-id |
         # Emit columns in order HOSTNAME, NODETYPE, ZONE, INSTANCE-ID, NAME, AGE, STATUS
         awk '{print $6, $7, $8, $9, $1, $4, $2}' | column -t | (
@@ -187,7 +206,37 @@ kubenodes() {
      )
 }
 
-alias k="kubectl"
+kubectlprod() {
+    local context="$(/usr/local/bin/kubectl config current-context)"
+    case $context in 
+        *"production"*)
+            kubectl $@
+            ;;
+        *"staging"*)
+            >&2 echo -e "\033[0;31mError: You are peered to a staging cluster: ${context:0:${#context}/2}"
+            return 1
+            ;;
+    esac
+}
+alias kubectlp="kubectlprod"
+alias kprod="kubectlprod"
+alias kp="kubectlprod"
+
+kubectlstaging() {
+    local context="$(/usr/local/bin/kubectl config current-context)"
+    case $context in 
+        *"production"*)
+            >&2 echo -e "\033[0;31mError: You are peered to a production cluster: ${context:0:${#context}/2}"
+            return 1
+            ;;
+        *"staging"*)
+            kubectl $@
+            ;;
+    esac
+}
+alias kubectls="kubectlstaging"
+alias kstaging="kubectlstaging"
+alias ks="kubectlstaging"
 
 # }}}
 # {{{ Completion
