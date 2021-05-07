@@ -189,7 +189,7 @@ kubectl() {
             color='\033[0;34m'
             ;;
     esac
-    echo -e "${color}$context\033[0m"
+    >&2 echo -e "${color}$context\033[0m"
     /usr/local/bin/kubectl $@
 }
 alias k=kubectl

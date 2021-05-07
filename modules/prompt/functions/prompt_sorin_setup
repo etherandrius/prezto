@@ -107,6 +107,11 @@ function prompt_sorin_precmd {
 }
 
 function kubectl_context {
+    tsh status | grep "EXPIRED\|Not logged in." &> /dev/null
+    if [ $? = 0 ]; then
+        return
+    fi 
+
     local context="$(/usr/local/bin/kubectl config current-context)"
     context="${context:0:${#context}/2}"
     case $context in 
