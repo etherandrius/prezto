@@ -107,22 +107,20 @@ function prompt_sorin_precmd {
 }
 
 function kubectl_context {
-    tsh status | grep "EXPIRED\|Not logged in." &> /dev/null
-    if [ $? = 0 ]; then
+    if [[ -v TELEPORT_CLUSTER ]]; then 
+    else   
+        _agrabauskas_kubectl_context=""
         return
-    fi 
-
-    local context="$(/usr/local/bin/kubectl config current-context)"
-    context="${context:0:${#context}/2}"
-    case $context in 
-        *"agrabauskas"*)
-            _agrabauskas_kubectl_context="%F{4}$context%F"
+    fi
+    case $TELEPORT_CLUSTER in 
+        *"-$USER-"*)
+            _agrabauskas_kubectl_context="%F{4}$TELEPORT_CLUSTER%F"
             ;;
         *"production"*)
-            _agrabauskas_kubectl_context="%F{1}$context%F"
+            _agrabauskas_kubectl_context="%F{1}$TELEPORT_CLUSTER%F"
             ;;
         *"staging"*)
-            _agrabauskas_kubectl_context="%F{2}$context%F"
+            _agrabauskas_kubectl_context="%F{2}$TELEPORT_CLUSTER%F"
             ;;
     esac
 }

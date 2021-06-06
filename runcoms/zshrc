@@ -12,8 +12,6 @@ fi
 
 # Customize to your needs...
 
-plugins=(kubectl)
-
 
 # Random {{{
 
@@ -40,7 +38,7 @@ bindkey -M menuselect '^M' .accept-line
 
 # Use modern completion system
 autoload -Uz compinit
-#compinit # maybe uncomment TODO
+# compinit # maybe uncomment TODO
 
 # (aagg) Mon  5 Nov 17:25:28 GMT 2018
 bindkey -v
@@ -86,10 +84,14 @@ export PATH="$PATH:$GOPATH/bin"
 # add ruby to PATH
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 export PATH="/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
-export PATH="/usr/local/opt/go@1.14/bin:$PATH"
+# export PATH="/usr/local/opt/go@1.14/bin:$PATH"
 export PATH="$PATH:/usr/local/opt"
 export PATH="/usr/local/Cellar:$PATH"
 #eval "$(rbenv init -)"
+export PATH="/usr/local/opt/openjdk/bin:$PATH;"
+
+export JAVA_HOME=`/usr/libexec/java_home -v 15`
+
 
 # export paths
 export P=~/Projects
@@ -101,6 +103,8 @@ alias bat='bat --theme=GitHub'
 
 # ./godelw alias
 alias gow='./godelw'
+# ./gradlew alias
+alias grw='./gradlew'
 
 # git
 alias gits='git s'
@@ -176,67 +180,13 @@ alert() {
 # {{{ kubectl
 
 
-kubectl() {
-    local context="$(/usr/local/bin/kubectl config current-context)"
-    context="${context:0:${#context}/2}"
+if [[ -d $GOPATH/src/github.palantir.build/deployability/kubectl-scripts/plugins ]]; then
+    export PATH="$PATH:$GOPATH/src/github.palantir.build/deployability/kubectl-scripts/plugins"
+fi
 
-    local color='\033[0;31m' 
-    case $context in 
-        *"staging"*)
-            color='\033[0;32m'
-            ;;
-        *"agrabauskas"*)
-            color='\033[0;34m'
-            ;;
-    esac
-    >&2 echo -e "${color}$context\033[0m"
-    /usr/local/bin/kubectl $@
-}
-alias k=kubectl
-
-kubenodes() {
-        kubectl get nodes --selector com.palantir.rubix/infrastructure-node= \
-        --label-columns kubernetes.io/hostname,nodetype,failure-domain.beta.kubernetes.io/zone,com.palantir.rubix/instance-id |
-        # Emit columns in order HOSTNAME, NODETYPE, ZONE, INSTANCE-ID, NAME, AGE, STATUS
-        awk '{print $6, $7, $8, $9, $1, $4, $2}' | column -t | (
-        read -r
-        # Print header line and sort the rest
-        printf "%s\n" "$REPLY"
-        sort -bk 2
-     )
-}
-
-kubectlprod() {
-    local context="$(/usr/local/bin/kubectl config current-context)"
-    case $context in 
-        *"production"*)
-            kubectl $@
-            ;;
-        *"staging"*)
-            >&2 echo -e "\033[0;31mError: You are peered to a staging cluster: ${context:0:${#context}/2}"
-            return 1
-            ;;
-    esac
-}
-alias kubectlp="kubectlprod"
-alias kprod="kubectlprod"
-alias kp="kubectlprod"
-
-kubectlstaging() {
-    local context="$(/usr/local/bin/kubectl config current-context)"
-    case $context in 
-        *"production"*)
-            >&2 echo -e "\033[0;31mError: You are peered to a production cluster: ${context:0:${#context}/2}"
-            return 1
-            ;;
-        *"staging"*)
-            kubectl $@
-            ;;
-    esac
-}
-alias kubectls="kubectlstaging"
-alias kstaging="kubectlstaging"
-alias ks="kubectlstaging"
+if [[ -f $GOPATH/src/github.palantir.build/deployability/kubectl-scripts/zsh.sh ]]; then
+    source $GOPATH/src/github.palantir.build/deployability/kubectl-scripts/zsh.sh
+fi
 
 # }}}
 # {{{ Completion
@@ -265,6 +215,14 @@ retrying_render() {
 # }}}
 # {{{ Test
 
+
+# Keylogger
+nvim() {
+    FILE="/Users/agrabauskas/.vim/keylogger/$(date -u +%FT%TZ).log"
+    touch $FILE
+    /usr/local/bin/nvim -w $FILE "$@"
+}
+
 # Called every time before the prompt is drawn
 precmd() { 
     if [[ -v tabname ]]; then 
@@ -279,6 +237,7 @@ precmd() {
 autoload colors; colors
 for color (${(k)fg})
   eval "$color() {print -n \$fg[$color]; cat; print -n \$reset_color}"
+
 
 
 # }}}
