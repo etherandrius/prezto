@@ -95,7 +95,6 @@ export JAVA_HOME=`/usr/libexec/java_home -v 15`
 
 # export paths
 export P=~/Projects
-export R=~/Projects/go/src/github.palantir.build/rubix
 export D=~/Projects/go/src/github.palantir.build/deployability
 
 # bat
@@ -128,7 +127,6 @@ alias cdd='cd ..; ls'
 # shortcuts
 alias cdroot='cd $(git rev-parse --show-toplevel)'
 alias cdp='cd $P; ls'
-alias cdr='cd $R; ls'
 alias cdg='cd $GOPATH/src; ls'
 alias cd-='popd'
 
