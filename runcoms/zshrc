@@ -216,9 +216,7 @@ retrying_render() {
 
 # Keylogger
 nvim() {
-    FILE="/Users/agrabauskas/.vim/keylogger/$(date -u +%FT%TZ).log"
-    touch $FILE
-    /usr/local/bin/nvim -w $FILE "$@"
+    /usr/local/bin/nvim -w "/Users/agrabauskas/.vim/keylogger/$(date -u +%FT%TZ)_${PWD##*/}.log" "$@"
 }
 
 # Called every time before the prompt is drawn
